@@ -170,6 +170,7 @@
       <input type="text" id="ytUrl" placeholder="Paste a YouTube playlist or video link" autocapitalize="off" autocorrect="off">
       <button class="pill" id="ytGo">Load</button>
     </div>
+    <div class="note">Playlist must be Public or Unlisted. For guaranteed loading with song titles, add a <code>GOOGLE_API_KEY</code> (see top of the file).</div>
     <div class="row"><button class="pill" id="gBtn">Sign in with Google</button>
       <select id="gSel" style="display:none"><option>my playlists…</option></select></div>
     <div class="note" id="gNote"></div>
@@ -252,8 +253,8 @@
 ============================================= */
 var CONFIG = {
   SPOTIFY_CLIENT_ID: 'ac8dd9f80c1940bb9e95008c94a9199e',
-  GOOGLE_CLIENT_ID: '758942052878-54o535s5v29399g1mu7muh0qai32nfje.apps.googleusercontent.com',
-  GOOGLE_API_KEY: 'AIzaSyB1GG0jdMA2EX1ZAMoAAksMoktb_6TGFao'
+  GOOGLE_CLIENT_ID: '758942052878-uvtv3d9jqpppfk4rhlmumfsf7t2pr3ed.apps.googleusercontent.com',
+  GOOGLE_API_KEY: ''
 };
 
 var MIX = [
@@ -415,7 +416,7 @@ function onYTReady(){
 function onYTState(e){
   if (src!=='yt') return;
   if (e.data===YT.PlayerState.PLAYING){
-    errStreak=0; now.playing=true; now.dur=ytP.getDuration()||0;
+    errStreak=0; clearTimeout(listWatchdog); now.playing=true; now.dur=ytP.getDuration()||0;
     if (ytMode==='list'){ try{ ytP.setLoop(true); var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='your playlist'; }catch(x){} }
     setStatus('now playing'); paintNow();
   } else if (e.data===YT.PlayerState.CUED){ if (ytMode==='list') try{ ytP.playVideo(); }catch(x){} }
@@ -432,11 +433,10 @@ function onYTError(){
   if (errStreak>=Math.max(queue.length,3)){ setStatus('these songs are unavailable right now'); now.playing=false; paintNow(); return; }
   setStatus('song skipped…'); ytNext();
 }
-/* (re)build the hidden player; passing list vars here is the reliable
-   way to load a playlist — the loadPlaylist/cuePlaylist JS calls are
-   flaky, so for pasted playlists we rebuild with the list baked in */
+/* (re)build the hidden player */
 function buildYT(videoId, extraVars){
   ytReady=false;
+  try{ if (ytP && ytP.destroy) ytP.destroy(); }catch(e){}
   var w=document.getElementById('ytWrap');
   w.innerHTML='<div id="yt"></div>';
   var cfg={ height:'2', width:'2',
@@ -444,6 +444,27 @@ function buildYT(videoId, extraVars){
     events:{onReady:onYTReady, onStateChange:onYTState, onError:onYTError} };
   if (videoId) cfg.videoId=videoId;
   ytP=new YT.Player('yt', cfg);
+}
+/* playlists: build the battle-tested /embed/videoseries?list= iframe
+   ourselves (the form YouTube's own Share→Embed generates), then
+   attach the API to it — the listType playerVars / loadPlaylist
+   routes fail silently for many playlists */
+var listWatchdog=null;
+function buildYTList(listId){
+  ytReady=false;
+  try{ if (ytP && ytP.destroy) ytP.destroy(); }catch(e){}
+  var w=document.getElementById('ytWrap');
+  var url='https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(listId)
+    +'&enablejsapi=1&autoplay=1&playsinline=1&controls=0&rel=0'
+    +'&origin='+encodeURIComponent(location.origin);
+  w.innerHTML='<iframe id="yt" width="2" height="2" frameborder="0" '
+    +'allow="autoplay; encrypted-media" src="'+url+'"></iframe>';
+  ytP=new YT.Player('yt', {events:{onReady:onYTReady, onStateChange:onYTState, onError:onYTError}});
+  clearTimeout(listWatchdog);
+  listWatchdog=setTimeout(function(){
+    if (ytMode==='list' && !now.playing && errStreak===0)
+      setStatus("playlist didn't load — is it Public/Unlisted? A GOOGLE_API_KEY (top of file) is the guaranteed path");
+  }, 9000);
 }
 window.onYouTubeIframeAPIReady=function(){
   if (pendingList){ var L=pendingList; pendingList=null; ytLoadList(L); }
@@ -468,7 +489,7 @@ function ytLoadList(listId){
   ytMode='list'; errStreak=0;
   now.title='உங்க playlist'; now.sub='loading…'; now.ct=0; now.dur=0; now.playing=false;
   paintNow(); paintTime();
-  if (window.YT && YT.Player) buildYT(null, {listType:'playlist', list:listId, autoplay:1});
+  if (window.YT && YT.Player) buildYTList(listId);
   else pendingList=listId;
 }
 function useYT(){ if (src==='sp') spPause(); src='yt'; paintNow(); }
