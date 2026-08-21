@@ -87,8 +87,6 @@
   #songTa{font-size:14px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #songEn{font-size:10px;letter-spacing:.1em;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
   #srcTag{font-size:8px;letter-spacing:.14em;border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 5px;color:var(--dim);flex:none}
-  #pax{font-size:10px;letter-spacing:.08em;color:var(--dim);flex:none;text-align:right}
-  #pax b{color:var(--ink);font-size:12px}
   #seekRow{display:flex;align-items:center;gap:8px;width:100%}
   #tCur,#tDur{font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums;flex:none;min-width:30px}
   #tDur{text-align:right}
@@ -196,7 +194,6 @@
       <div id="songEn">boarding</div>
     </div>
     <span id="srcTag">YT</span>
-    <div id="pax">உடன் பயணிகள்<br><b id="paxN">–</b></div>
     <div id="seekRow">
       <span id="tCur">0:00</span>
       <input id="seek" type="range" min="0" max="1000" value="0">
@@ -244,12 +241,20 @@
         Authorized JavaScript origins: https://haresh-16.github.io
      4. Copy the Client ID (ends in .apps.googleusercontent.com)
      Pasting a public/unlisted playlist link needs NO sign-in at all.
+
+   GOOGLE_API_KEY (optional but recommended — pasted public playlists
+   then load with real titles, paging and skip logic):
+     Same Cloud project → APIs & Services → Credentials →
+     + Create Credentials → API key → paste it below.
+     Then Edit key → API restrictions: YouTube Data API v3;
+     Website restrictions: https://haresh-16.github.io/*
+     Without it, pasted playlists still play via the YouTube iframe.
 ============================================= */
 var CONFIG = {
   SPOTIFY_CLIENT_ID: 'ac8dd9f80c1940bb9e95008c94a9199e',
-  GOOGLE_CLIENT_ID: '758942052878-54o535s5v29399g1mu7muh0qai32nfje.apps.googleusercontent.com'
+  GOOGLE_CLIENT_ID: '758942052878-uvtv3d9jqpppfk4rhlmumfsf7t2pr3ed.apps.googleusercontent.com',
+  GOOGLE_API_KEY: ''
 };
-
 
 var MIX = [
   {id:'SZOt9Xf8kOg', ta:'வாத்தி கமிங்',   en:'Vaathi Coming · Master'},
@@ -398,19 +403,26 @@ window.onYouTubeIframeAPIReady=function(){
     height:'2',width:'2',videoId:queue[0].id,
     playerVars:{playsinline:1,controls:0,disablekb:1,rel:0},
     events:{
-      onReady:function(){ ytReady=true; setStatus('ready · '+queue.length+' songs on board'); if(pendingPlay) ytP.playVideo(); },
+      onReady:function(){ ytReady=true; setStatus('ready · '+queue.length+' songs on board');
+        if (pendingList){ var L=pendingList; pendingList=null; ytLoadList(L); }
+        else if (pendingPlay) ytP.playVideo(); },
       onStateChange:function(e){
         if (src!=='yt') return;
         if (e.data===YT.PlayerState.PLAYING){
           errStreak=0; now.playing=true; now.dur=ytP.getDuration()||0;
-          if (ytMode==='list'){ try{ var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='your playlist'; }catch(x){} }
+          if (ytMode==='list'){ try{ ytP.setLoop(true); var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='your playlist'; }catch(x){} }
           setStatus('now playing'); paintNow();
-        } else if (e.data===YT.PlayerState.PAUSED){ now.playing=false; setStatus('paused'); paintNow(); }
+        } else if (e.data===YT.PlayerState.CUED){ if (ytMode==='list') ytP.playVideo(); }
+        else if (e.data===YT.PlayerState.PAUSED){ now.playing=false; setStatus('paused'); paintNow(); }
         else if (e.data===YT.PlayerState.BUFFERING){ setStatus('பாட்டு ஏறுது…'); }
         else if (e.data===YT.PlayerState.ENDED){ ytNext(); }
       },
       onError:function(){
         errStreak++;
+        if (ytMode==='list'){
+          if (errStreak>=3){ setStatus("that playlist won't embed — make sure it's public or unlisted"); now.playing=false; paintNow(); return; }
+          setStatus('song skipped…'); try{ ytP.nextVideo(); }catch(x){} return;
+        }
         if (errStreak>=Math.max(queue.length,3)){ setStatus('these songs are unavailable right now'); now.playing=false; paintNow(); return; }
         setStatus('song skipped…'); ytNext();
       }
@@ -431,22 +443,58 @@ function ytNext(){
   if (ytMode==='list'){ if(ytReady) ytP.nextVideo(); return; }
   ytLoad(qi+1);
 }
+var pendingList=null;
 function ytLoadList(listId){
-  ytMode='list'; now.title='உங்க playlist'; now.sub='loading…'; paintNow();
-  if (ytReady){ ytP.loadPlaylist({listType:'playlist', list:listId}); ytP.setLoop(true); }
+  ytMode='list'; now.title='உங்க playlist'; now.sub='loading…'; now.ct=0; now.dur=0; paintNow(); paintTime();
+  if (ytReady){ ytP.cuePlaylist({listType:'playlist', list:listId}); ytP.playVideo(); }
+  else pendingList=listId;
 }
 function useYT(){ if (src==='sp') spPause(); src='yt'; paintNow(); }
 
 /* paste a link */
+function ytStartQueue(items, label){
+  ytMode='queue'; queue=items; errStreak=0;
+  ytLoad(0);
+  if (ytReady) ytP.playVideo(); else pendingPlay=true;
+  if (label) setStatus(label);
+}
+function fetchPublicList(id){
+  var items=[];
+  function page(tok){
+    var u='https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId='
+      + encodeURIComponent(id) + '&key=' + encodeURIComponent(CONFIG.GOOGLE_API_KEY)
+      + (tok ? ('&pageToken='+tok) : '');
+    return fetch(u).then(function(r){return r.json();}).then(function(j){
+      if (j.error) throw j.error;
+      (j.items||[]).forEach(function(it){
+        var sn=it.snippet||{}, vid=sn.resourceId && sn.resourceId.videoId;
+        if (vid && sn.title!=='Private video' && sn.title!=='Deleted video')
+          items.push({id:vid, ta:'', en:sn.title||'YouTube', sub:'your playlist'});
+      });
+      if (j.nextPageToken && items.length<200) return page(j.nextPageToken);
+    });
+  }
+  return page('').then(function(){ return items; });
+}
 $('ytGo').addEventListener('click', function(){
   var v=$('ytUrl').value.trim(); if(!v) return;
-  useYT();
-  var mList=v.match(/[?&]list=([\w-]+)/);
-  var mVid=v.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{6,})/) || (/^[\w-]{11}$/.test(v)?[0,v]:null);
-  if (mList){ ytLoadList(mList[1]); setStatus('playlist boarding…'); }
-  else if (mVid){ ytMode='queue'; queue=[{id:mVid[1], ta:'', en:'your pick', sub:'YouTube'}]; ytLoad(0); if(ytReady) ytP.playVideo(); }
-  else setStatus('could not read that link');
   $('ytUrl').value='';
+  useYT();
+  var mList=v.match(/[?&]list=([\w-]+)/) || v.match(/^((?:PL|UU|FL|OLAK5uy_)[\w-]{8,})$/);
+  var mVid=v.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || (/^[\w-]{11}$/.test(v)?[0,v]:null);
+  if (mList){
+    var id=mList[1];
+    if (/^(RD|WL$|LL$)/.test(id)){ setStatus("Mixes / Watch Later can't be loaded — use a normal public playlist"); return; }
+    setStatus('playlist boarding…');
+    if (CONFIG.GOOGLE_API_KEY){
+      fetchPublicList(id).then(function(items){
+        if (items.length) ytStartQueue(items, items.length+' songs boarded');
+        else { setStatus('playlist looks empty — trying direct load'); ytLoadList(id); }
+      }).catch(function(){ setStatus('API fetch failed — trying direct load'); ytLoadList(id); });
+    } else ytLoadList(id);
+  }
+  else if (mVid){ ytStartQueue([{id:mVid[1], ta:'', en:'your pick', sub:'YouTube'}]); }
+  else setStatus('could not read that link');
 });
 
 /* Google sign-in → your playlists */
@@ -685,7 +733,7 @@ setInterval(function(){
   }
 }, 500);
 
-/* ================= BOARDING + PASSENGERS ================= */
+/* ================= BOARDING ================= */
 var boarded=false, board=$('board');
 board.addEventListener('click', function(){
   if (boarded) return; boarded=true;
@@ -695,15 +743,6 @@ board.addEventListener('click', function(){
   if (ytReady) ytP.playVideo(); else { pendingPlay=true; setStatus('பாட்டு ஏறுது…'); }
   setTimeout(function(){ if(!ytReady) setStatus('YouTube blocked here — open the deployed page for music'); },6000);
 });
-var paxN=$('paxN');
-var hour=new Date().getHours();
-var paxCount=6+((hour>=8&&hour<=22)?6:1)+Math.floor(Math.random()*7);
-function drift(){
-  paxCount=Math.max(3,Math.min(38,paxCount+(Math.random()<0.5?-1:1)));
-  paxN.textContent=paxCount;
-  setTimeout(drift,6000+Math.random()*9000);
-}
-paxN.textContent=paxCount; setTimeout(drift,5000);
 
 paintNow(); paintTime();
 })();
