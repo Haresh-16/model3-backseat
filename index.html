@@ -6,20 +6,18 @@
 <title>Model 3 Hits · a ride down memory lane</title>
 <meta name="description" content="Tamil hits from the back seat of a Model 3. A remake of Town Bus Hits.">
 <style>
-  :root{ --ink:#e8edf2; --dim:#9aa4ad; --chip:rgba(10,12,15,.7); --blue:#4f8fea; --sp:#1db954; --yt:#ff4b4b; }
+  :root{ --ink:#e8edf2; --dim:#9aa4ad; --chip:rgba(10,12,15,.7); --blue:#4f8fea; }
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;overflow:hidden;background:#000;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent;color:var(--ink)}
 
   /* ---------- photo stage ---------- */
   #stage{position:fixed;inset:0;overflow:hidden;background:#000}
   #rig{position:absolute;will-change:transform}
-  #photo{position:absolute;inset:0;width:100%;height:100%;display:block;
-    transition:filter 1.6s ease}
+  #photo{position:absolute;inset:0;width:100%;height:100%;display:block;transition:filter 1.6s ease}
   .night #photo{filter:brightness(.52) saturate(.72) contrast(1.06)}
   .fx{position:absolute;pointer-events:none}
   #tint{inset:0;background:#0a1430;mix-blend-mode:multiply;opacity:0;transition:opacity 1.6s}
   .night #tint{opacity:.42}
-  /* drifting clouds on the glass roof (day) */
   .cloud{border-radius:50%;filter:blur(28px);background:radial-gradient(closest-side,rgba(255,255,255,.5),rgba(255,255,255,0));
     mix-blend-mode:screen;opacity:.16;transition:opacity 1.6s}
   .night .cloud{opacity:0}
@@ -27,18 +25,15 @@
   #cloudB{width:34%;height:11%;left:-15%;top:17%;animation:driftB 89s linear infinite}
   @keyframes driftA{from{transform:translateX(0)}to{transform:translateX(320%)}}
   @keyframes driftB{from{transform:translateX(0)}to{transform:translateX(420%)}}
-  /* stars on the roof (night) */
   #stars{left:0;top:0;width:100%;height:31%;opacity:0;transition:opacity 1.6s}
   .night #stars{opacity:1}
   #stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#dfe9ff;animation:tw 3.4s ease-in-out infinite}
   @keyframes tw{0%,100%{opacity:.15}50%{opacity:.95}}
-  /* sun glare (day) */
   #glare{width:26%;height:16%;left:47%;top:35%;border-radius:50%;filter:blur(20px);
     background:radial-gradient(closest-side,rgba(255,240,200,.55),rgba(255,240,200,0));
     mix-blend-mode:screen;animation:glow 7s ease-in-out infinite;transition:opacity 1.6s}
   .night #glare{opacity:0}
   @keyframes glow{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.6;transform:scale(1.12)}}
-  /* headlight pool + screen glows (night) */
   #headlight{width:34%;height:10%;left:35%;top:45%;border-radius:50%;filter:blur(14px);
     background:radial-gradient(closest-side,rgba(255,230,170,.5),rgba(255,230,170,0));
     mix-blend-mode:screen;opacity:0;transition:opacity 1.6s}
@@ -46,7 +41,6 @@
   .keep{mix-blend-mode:screen;filter:blur(10px);opacity:0;transition:opacity 1.6s;border-radius:12px;
     background:radial-gradient(closest-side,rgba(190,215,255,.4),rgba(190,215,255,0))}
   .night .keep{opacity:.8}
-  /* passing light sweep */
   #sweep{inset:0;overflow:hidden}
   #sweep b{position:absolute;top:-20%;left:-35%;width:22%;height:140%;transform:skewX(-18deg);
     background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,252,240,.10),rgba(255,255,255,0));
@@ -56,7 +50,6 @@
   @keyframes sweep{0%,55%{left:-35%}85%,100%{left:120%}}
   #vig{position:fixed;inset:0;pointer-events:none;
     background:radial-gradient(120% 90% at 50% 42%,rgba(0,0,0,0) 55%,rgba(0,0,0,.5) 100%)}
-  /* live now-playing strip mapped onto the Tesla screen */
   #strip{position:absolute;left:0;top:0;width:300px;height:44px;transform-origin:0 0;
     background:#0b0c10f2;border-radius:3px;overflow:hidden;display:flex;align-items:center;gap:8px;padding:0 10px}
   #strip .pp{width:0;height:0;border-style:solid;flex:none}
@@ -86,7 +79,6 @@
   #song{flex:1;min-width:0}
   #songTa{font-size:14px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #songEn{font-size:10px;letter-spacing:.1em;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-  #srcTag{font-size:8px;letter-spacing:.14em;border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:2px 5px;color:var(--dim);flex:none}
   #seekRow{display:flex;align-items:center;gap:8px;width:100%}
   #tCur,#tDur{font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums;flex:none;min-width:30px}
   #tDur{text-align:right}
@@ -99,25 +91,6 @@
   .pill{background:transparent;border:1px solid rgba(255,255,255,.16);color:var(--ink);
     font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px;border-radius:8px;cursor:pointer;flex:none}
   .pill:active{background:rgba(255,255,255,.1)}
-
-  /* sources panel */
-  #panel{position:absolute;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(calc(-100% - 64px));
-    width:min(560px, calc(100% - 24px));max-height:52vh;overflow:auto;
-    background:var(--chip);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-    border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;display:none;pointer-events:auto}
-  #panel.open{display:block}
-  #panel h4{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin:14px 0 8px}
-  #panel h4:first-child{margin-top:0}
-  #panel h4 em{font-style:normal;border-radius:3px;padding:1px 4px;margin-right:6px}
-  #panel h4 .yt{background:var(--yt);color:#fff}
-  #panel h4 .sp{background:var(--sp);color:#04220e}
-  .row{display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap}
-  .row input[type=text]{flex:1;min-width:150px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);
-    color:var(--ink);border-radius:9px;padding:9px 11px;font-size:16px}
-  .row select{flex:1;min-width:150px;background:rgba(20,23,28,.9);border:1px solid rgba(255,255,255,.14);
-    color:var(--ink);border-radius:9px;padding:9px 8px;font-size:14px}
-  .note{font-size:10px;color:var(--dim);line-height:1.6;margin-top:4px}
-  .note code{color:#cdd6df}
 
   /* boarding */
   #board{position:fixed;inset:0;background:radial-gradient(120% 90% at 50% 30%, rgba(13,20,28,.55) 0%, rgba(5,8,12,.88) 75%);
@@ -161,27 +134,6 @@
   <div id="title"><b>Model 3 Hits</b><span>rear seat · a ride down memory lane</span></div>
   <a id="credit" href="https://town-bus.vercel.app" target="_blank" rel="noopener">after Town Bus Hits ↗</a>
 
-  <div id="panel">
-    <h4>தமிழ் Mix</h4>
-    <div class="row"><button class="pill" id="mixBtn">Play the built-in Tamil mix</button></div>
-
-    <h4><em class="yt">YT</em>YouTube — yours</h4>
-    <div class="row">
-      <input type="text" id="ytUrl" placeholder="Paste a YouTube playlist or video link" autocapitalize="off" autocorrect="off">
-      <button class="pill" id="ytGo">Load</button>
-    </div>
-    <div class="note">Playlist must be Public or Unlisted. For guaranteed loading with song titles, add a <code>GOOGLE_API_KEY</code> (see top of the file).</div>
-    <div class="row"><button class="pill" id="gBtn">Sign in with Google</button>
-      <select id="gSel" style="display:none"><option>my playlists…</option></select></div>
-    <div class="note" id="gNote"></div>
-
-    <h4><em class="sp">SP</em>Spotify — yours</h4>
-    <div class="row"><button class="pill" id="spBtn">Log in with Spotify</button>
-      <select id="spSel" style="display:none"><option>my playlists…</option></select>
-      <select id="spDev" style="display:none"><option>play on…</option></select></div>
-    <div class="note" id="spNote"></div>
-  </div>
-
   <div id="chip">
     <button class="ibtn" id="playBtn" aria-label="play or pause">
       <svg id="icoPlay" viewBox="0 0 16 16"><path d="M4 2l10 6-10 6z"/></svg>
@@ -194,15 +146,13 @@
       <div id="songTa">பாட்டு ஏறுது…</div>
       <div id="songEn">boarding</div>
     </div>
-    <span id="srcTag">YT</span>
     <div id="seekRow">
       <span id="tCur">0:00</span>
       <input id="seek" type="range" min="0" max="1000" value="0">
       <span id="tDur">0:00</span>
     </div>
     <div id="miscRow">
-      <span id="status">songs play via YouTube / Spotify</span>
-      <button class="pill" id="srcBtn">⇄ Source</button>
+      <span id="status">songs play via YouTube</span>
       <button class="pill" id="nightBtn">Night</button>
     </div>
   </div>
@@ -213,7 +163,7 @@
   <div class="sub">Model 3 Hits</div>
   <div class="tap">tap to board</div>
   <div class="foot">Tamil hits from the back seat of a Model 3<br>
-    a remake of <a href="https://town-bus.vercel.app" target="_blank" rel="noopener">Town Bus Hits</a> · songs via YouTube &amp; Spotify</div>
+    a remake of <a href="https://town-bus.vercel.app" target="_blank" rel="noopener">Town Bus Hits</a> · songs play via YouTube</div>
 </div>
 
 <script>
@@ -221,40 +171,25 @@
 "use strict";
 
 /* ================= CONFIG =================
-   To let people LOG IN with their own accounts you need two free IDs.
-   Both take ~2 minutes; the app works without them (built-in mix +
-   pasted YouTube links) and shows setup hints until you add them.
+   PLAYLIST_URL — the ONE playlist every visitor hears. You (the owner)
+   set it here; visitors get no choice. Paste any PUBLIC or UNLISTED
+   YouTube playlist link, e.g.
+     https://www.youtube.com/playlist?list=PLxxxxxxxx
+   A bare id (PL…/UU…/OLAK5uy_…) or a single video link also works.
+   Leave '' to use the built-in Tamil MIX below.
+   Note: Mixes (list=RD…) and Watch Later can't be embedded.
 
-   SPOTIFY_CLIENT_ID:
-     1. developer.spotify.com/dashboard → Create app
-     2. Redirect URI: your exact page URL, e.g.
-        https://haresh-16.github.io/model3-hits/  (and/or .../index.html)
-     3. Check "Web API" + "Web Playback SDK" → Save → copy Client ID
-     4. Dashboard → User Management → add the Spotify emails allowed
-        to log in (dev mode allows up to 25).
-     Full playback needs Spotify Premium; free accounts can log in but
-     playback control is Premium-only (Spotify rule, not ours).
-
-   GOOGLE_CLIENT_ID (for "Sign in with Google" playlist picker):
-     1. console.cloud.google.com → new project → enable "YouTube Data API v3"
-     2. OAuth consent screen → External → add yourself as test user
-     3. Credentials → Create OAuth client ID → Web application →
-        Authorized JavaScript origins: https://haresh-16.github.io
-     4. Copy the Client ID (ends in .apps.googleusercontent.com)
-     Pasting a public/unlisted playlist link needs NO sign-in at all.
-
-   GOOGLE_API_KEY (optional but recommended — pasted public playlists
-   then load with real titles, paging and skip logic):
-     Same Cloud project → APIs & Services → Credentials →
-     + Create Credentials → API key → paste it below.
-     Then Edit key → API restrictions: YouTube Data API v3;
-     Website restrictions: https://haresh-16.github.io/*
-     Without it, pasted playlists still play via the YouTube iframe.
+   GOOGLE_API_KEY — optional but recommended. With it, the playlist is
+   fetched through the YouTube Data API and played song-by-song: real
+   titles in the UI, private/deleted tracks skipped, most reliable path.
+     console.cloud.google.com → APIs & Services → Credentials →
+     + Create Credentials → API key. Then Edit key → restrict to
+     YouTube Data API v3 + your site (https://haresh-16.github.io/*).
+   Without it, the playlist plays via YouTube's own embed player.
 ============================================= */
 var CONFIG = {
-  SPOTIFY_CLIENT_ID: 'ac8dd9f80c1940bb9e95008c94a9199e',
-  GOOGLE_CLIENT_ID: '758942052878-uvtv3d9jqpppfk4rhlmumfsf7t2pr3ed.apps.googleusercontent.com',
-  GOOGLE_API_KEY: 'AIzaSyC6H7sDDE0Z1nPBvFxq5U2wwOkmmjYb19Q'
+  PLAYLIST_URL: '',
+  GOOGLE_API_KEY: ''
 };
 
 var MIX = [
@@ -268,23 +203,13 @@ var MIX = [
 /* ---------- photo geometry (fractions of the image) ---------- */
 var GEO = {
   screen: { tl:[0.4555,0.5410], tr:[0.5565,0.5385], br:[0.5520,0.6065], bl:[0.4560,0.6100], stripT:0.74 },
-  keepMain:[0.445,0.53,0.125,0.09],   // x,y,w,h
+  keepMain:[0.445,0.53,0.125,0.09],
   keepRear:[0.37,0.85,0.25,0.14],
   roofH:0.31
 };
 
-/* ---------- safe storage (never crashes sandboxed previews) ---------- */
-function safeStore(kind){
-  try{ var s=window[kind]; var k='__t'+Math.random(); s.setItem(k,'1'); s.removeItem(k); return s; }
-  catch(e){ var m={}; return { getItem:function(k){return (k in m)?m[k]:null;},
-    setItem:function(k,v){m[k]=String(v);}, removeItem:function(k){delete m[k];} }; }
-}
-var LS = safeStore('localStorage'), SS = safeStore('sessionStorage');
-
-/* ---------- tiny helpers ---------- */
 function $(id){ return document.getElementById(id); }
 function fmt(s){ s=Math.max(0,Math.floor(s||0)); return Math.floor(s/60)+':' + ('0'+(s%60)).slice(-2); }
-function esc(t){ return String(t==null?'':t); }
 
 /* ================= STAGE: cover-fit + liveliness ================= */
 var IMG_W=1536, IMG_H=2040;
@@ -303,7 +228,6 @@ function placeRegions(){
   pct($('keepMain'), GEO.keepMain[0],GEO.keepMain[1],GEO.keepMain[2],GEO.keepMain[3]);
   pct($('keepRear'), GEO.keepRear[0],GEO.keepRear[1],GEO.keepRear[2],GEO.keepRear[3]);
 }
-/* stars */
 (function(){
   var host=$('stars'), n=60, html='';
   for (var i=0;i<n;i++){
@@ -338,7 +262,6 @@ function placeStrip(){
   $('strip').style.transform='matrix3d('+m.join(',')+')';
 }
 
-/* liveliness loop */
 var playingGlobal=false, t0=performance.now();
 function sway(){
   var t=(performance.now()-t0)/1000;
@@ -352,7 +275,6 @@ function sway(){
 window.addEventListener('resize', layout);
 layout(); requestAnimationFrame(sway);
 
-/* night mode */
 var night=false, nightBtn=$('nightBtn');
 function setNight(on){
   night=on; document.body.classList.toggle('night', on);
@@ -362,13 +284,12 @@ function setNight(on){
 nightBtn.addEventListener('click', function(){ setNight(!night); });
 (function(){ var h=new Date().getHours(); if (h>=19||h<6) setNight(true); })();
 
-/* ================= UNIFIED PLAYER UI ================= */
+/* ================= PLAYER UI ================= */
 var songTa=$('songTa'), songEn=$('songEn'), statusEl=$('status');
 var tCur=$('tCur'), tDur=$('tDur'), seek=$('seek');
-var icoPlay=$('icoPlay'), icoPause=$('icoPause'), srcTag=$('srcTag');
+var icoPlay=$('icoPlay'), icoPause=$('icoPause');
 var stripTT=$('stripTT'), stripBar=$('stripBar'), stripPP=$('stripPP');
 var now={title:'—', sub:'', ct:0, dur:0, playing:false};
-var src='yt'; // 'yt' | 'sp'
 var seeking=false;
 
 function paintNow(){
@@ -379,8 +300,6 @@ function paintNow(){
   stripTT.textContent = now.title || 'Model 3 Hits';
   stripPP.className = 'pp ' + (now.playing?'pause':'play');
   playingGlobal = now.playing;
-  srcTag.textContent = src==='yt' ? 'YT' : 'SP';
-  srcTag.style.borderColor = src==='yt' ? 'rgba(255,90,90,.6)' : 'rgba(29,185,84,.6)';
 }
 function paintTime(){
   tCur.textContent=fmt(now.ct); tDur.textContent=fmt(now.dur);
@@ -390,36 +309,45 @@ function paintTime(){
 }
 function setStatus(t){ statusEl.textContent=t; }
 
-/* ================= YOUTUBE ================= */
-var ytP=null, ytReady=false, pendingPlay=false, errStreak=0;
-var ytMode='queue';       // 'queue' | 'list'
-var queue=MIX.slice(), qi=0;
+/* ================= THE PLAYLIST (owner-configured) ================= */
+function parseSource(v){
+  v = String(v||'').trim();
+  if (!v) return {mix:true};
+  var mList = v.match(/[?&]list=([\w-]+)/) || v.match(/^((?:PL|UU|FL|OLAK5uy_)[\w-]{8,})$/);
+  if (mList){
+    var id = mList[1];
+    if (/^(RD|WL$|LL$)/.test(id)) return {bad:'Mixes / Watch Later can\'t be embedded', mix:true};
+    return {list:id};
+  }
+  var mVid = v.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || (/^[\w-]{11}$/.test(v)?[0,v]:null);
+  if (mVid) return {video:mVid[1]};
+  return {bad:'PLAYLIST_URL not recognized', mix:true};
+}
+var SRC = parseSource(CONFIG.PLAYLIST_URL);
+
+/* ================= YOUTUBE ENGINE ================= */
+var ytP=null, ytReady=false, boarded=false, pendingPlay=false, errStreak=0;
+var ytMode = SRC.list ? 'list' : 'queue';   // may flip to 'queue' if API fetch succeeds
+var queue = SRC.video ? [{id:SRC.video, ta:'', en:'the song', sub:'Model 3 Hits'}] : MIX.slice();
+var qi=0;
 
 var tag=document.createElement('script');
 tag.src='https://www.youtube.com/iframe_api';
 tag.onerror=function(){ setStatus('YouTube blocked here — open the deployed page for music'); };
 document.head.appendChild(tag);
 
+var listWatchdog=null;
 function onYTReady(){
   ytReady=true;
-  if (ytMode==='list'){
-    setStatus('playlist boarding…');
-    try{ ytP.playVideo(); }catch(e){}
-    setTimeout(function(){
-      if (src==='yt' && ytMode==='list' && !now.playing) setStatus('tap ▶ to start your playlist');
-    }, 3000);
-  } else {
-    setStatus('ready · '+queue.length+' songs on board');
-    if (pendingPlay){ pendingPlay=false; try{ ytP.playVideo(); }catch(e){} }
-  }
+  if (boarded){ try{ ytP.playVideo(); }catch(e){} }
+  else setStatus(ytMode==='list' ? 'playlist cued · tap to board' : 'ready · '+queue.length+' songs on board');
 }
 function onYTState(e){
-  if (src!=='yt') return;
   if (e.data===YT.PlayerState.PLAYING){
     errStreak=0; clearTimeout(listWatchdog); now.playing=true; now.dur=ytP.getDuration()||0;
-    if (ytMode==='list'){ try{ ytP.setLoop(true); var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='your playlist'; }catch(x){} }
+    if (ytMode==='list'){ try{ ytP.setLoop(true); var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='Model 3 Hits playlist'; }catch(x){} }
     setStatus('now playing'); paintNow();
-  } else if (e.data===YT.PlayerState.CUED){ if (ytMode==='list') try{ ytP.playVideo(); }catch(x){} }
+  } else if (e.data===YT.PlayerState.CUED){ if (ytMode==='list' && boarded) try{ ytP.playVideo(); }catch(x){} }
   else if (e.data===YT.PlayerState.PAUSED){ now.playing=false; setStatus('paused'); paintNow(); }
   else if (e.data===YT.PlayerState.BUFFERING){ setStatus('பாட்டு ஏறுது…'); }
   else if (e.data===YT.PlayerState.ENDED){ ytNext(); }
@@ -427,53 +355,37 @@ function onYTState(e){
 function onYTError(){
   errStreak++;
   if (ytMode==='list'){
-    if (errStreak>=3){ setStatus("that playlist won't embed — make sure it's public or unlisted"); now.playing=false; paintNow(); return; }
+    if (errStreak>=3){ setStatus("the playlist won't embed — owner: check it's Public/Unlisted"); now.playing=false; paintNow(); return; }
     setStatus('song skipped…'); try{ ytP.nextVideo(); }catch(x){} return;
   }
-  if (errStreak>=Math.max(queue.length,3)){ setStatus('these songs are unavailable right now'); now.playing=false; paintNow(); return; }
+  if (errStreak>=Math.max(queue.length,3)){ setStatus('songs are unavailable right now'); now.playing=false; paintNow(); return; }
   setStatus('song skipped…'); ytNext();
 }
-/* (re)build the hidden player */
-function buildYT(videoId, extraVars){
+function buildYT(videoId){
   ytReady=false;
   try{ if (ytP && ytP.destroy) ytP.destroy(); }catch(e){}
-  var w=document.getElementById('ytWrap');
-  w.innerHTML='<div id="yt"></div>';
-  var cfg={ height:'2', width:'2',
-    playerVars:Object.assign({playsinline:1,controls:0,disablekb:1,rel:0}, extraVars||{}),
-    events:{onReady:onYTReady, onStateChange:onYTState, onError:onYTError} };
-  if (videoId) cfg.videoId=videoId;
-  ytP=new YT.Player('yt', cfg);
+  var w=$('ytWrap'); w.innerHTML='<div id="yt"></div>';
+  ytP=new YT.Player('yt',{ height:'2', width:'2', videoId:videoId,
+    playerVars:{playsinline:1,controls:0,disablekb:1,rel:0},
+    events:{onReady:onYTReady, onStateChange:onYTState, onError:onYTError} });
 }
-/* playlists: build the battle-tested /embed/videoseries?list= iframe
-   ourselves (the form YouTube's own Share→Embed generates), then
-   attach the API to it — the listType playerVars / loadPlaylist
-   routes fail silently for many playlists */
-var listWatchdog=null;
+/* playlists load via the battle-tested /embed/videoseries?list= iframe
+   (the markup YouTube's own Share→Embed generates), API attached to it */
 function buildYTList(listId){
   ytReady=false;
   try{ if (ytP && ytP.destroy) ytP.destroy(); }catch(e){}
-  var w=document.getElementById('ytWrap');
+  var w=$('ytWrap');
   var url='https://www.youtube.com/embed/videoseries?list='+encodeURIComponent(listId)
-    +'&enablejsapi=1&autoplay=1&playsinline=1&controls=0&rel=0'
+    +'&enablejsapi=1&playsinline=1&controls=0&rel=0'
     +'&origin='+encodeURIComponent(location.origin);
   w.innerHTML='<iframe id="yt" width="2" height="2" frameborder="0" '
     +'allow="autoplay; encrypted-media" src="'+url+'"></iframe>';
   ytP=new YT.Player('yt', {events:{onReady:onYTReady, onStateChange:onYTState, onError:onYTError}});
-  clearTimeout(listWatchdog);
-  listWatchdog=setTimeout(function(){
-    if (ytMode==='list' && !now.playing && errStreak===0)
-      setStatus("playlist didn't load — is it Public/Unlisted? A GOOGLE_API_KEY (top of file) is the guaranteed path");
-  }, 9000);
 }
-window.onYouTubeIframeAPIReady=function(){
-  if (pendingList){ var L=pendingList; pendingList=null; ytLoadList(L); }
-  else buildYT(queue[0].id, null);
-};
 function ytTitlesFromQueue(){
   var s=queue[qi]||{};
   now.title = s.ta || s.en || 'YouTube';
-  now.sub = s.ta ? s.en : (s.sub||'your pick');
+  now.sub = s.ta ? s.en : (s.sub||'Model 3 Hits');
 }
 function ytLoad(i){
   qi=(i+queue.length)%queue.length;
@@ -481,311 +393,91 @@ function ytLoad(i){
   if (ytReady) ytP.loadVideoById(queue[qi].id);
 }
 function ytNext(){
-  if (ytMode==='list'){ if(ytReady) ytP.nextVideo(); return; }
+  if (ytMode==='list'){ if(ytReady) try{ ytP.nextVideo(); }catch(e){} return; }
   ytLoad(qi+1);
 }
-var pendingList=null;
-function ytLoadList(listId){
-  ytMode='list'; errStreak=0;
-  now.title='உங்க playlist'; now.sub='loading…'; now.ct=0; now.dur=0; now.playing=false;
-  paintNow(); paintTime();
-  if (window.YT && YT.Player) buildYTList(listId);
-  else pendingList=listId;
-}
-function useYT(){ if (src==='sp') spPause(); src='yt'; paintNow(); }
 
-/* paste a link */
-function ytStartQueue(items, label){
-  ytMode='queue'; queue=items; errStreak=0;
-  ytLoad(0);
-  if (ytReady) ytP.playVideo(); else pendingPlay=true;
-  if (label) setStatus(label);
-}
-function fetchPublicList(id){
+/* If the owner supplied a playlist AND an API key, prefetch the songs
+   and play them one-by-one (most reliable, real titles). Falls back to
+   the videoseries embed if the fetch fails. */
+var apiQueueReady=false;
+function prefetchViaAPI(listId){
   var items=[];
   function page(tok){
     var u='https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId='
-      + encodeURIComponent(id) + '&key=' + encodeURIComponent(CONFIG.GOOGLE_API_KEY)
+      + encodeURIComponent(listId) + '&key=' + encodeURIComponent(CONFIG.GOOGLE_API_KEY)
       + (tok ? ('&pageToken='+tok) : '');
     return fetch(u).then(function(r){return r.json();}).then(function(j){
       if (j.error) throw j.error;
       (j.items||[]).forEach(function(it){
         var sn=it.snippet||{}, vid=sn.resourceId && sn.resourceId.videoId;
         if (vid && sn.title!=='Private video' && sn.title!=='Deleted video')
-          items.push({id:vid, ta:'', en:sn.title||'YouTube', sub:'your playlist'});
+          items.push({id:vid, ta:'', en:sn.title||'YouTube', sub:'Model 3 Hits playlist'});
       });
       if (j.nextPageToken && items.length<200) return page(j.nextPageToken);
     });
   }
   return page('').then(function(){ return items; });
 }
-$('ytUrl').addEventListener('keydown', function(e){ if (e.key==='Enter'){ e.preventDefault(); $('ytGo').click(); } });
-$('ytGo').addEventListener('click', function(){
-  var v=$('ytUrl').value.trim(); if(!v) return;
-  $('ytUrl').value='';
-  useYT();
-  var mList=v.match(/[?&]list=([\w-]+)/) || v.match(/^((?:PL|UU|FL|OLAK5uy_)[\w-]{8,})$/);
-  var mVid=v.match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/) || (/^[\w-]{11}$/.test(v)?[0,v]:null);
-  if (mList){
-    var id=mList[1];
-    if (/^(RD|WL$|LL$)/.test(id)){ setStatus("Mixes / Watch Later can't be loaded — use a normal public playlist"); return; }
-    setStatus('playlist boarding…');
-    if (CONFIG.GOOGLE_API_KEY){
-      fetchPublicList(id).then(function(items){
-        if (items.length) ytStartQueue(items, items.length+' songs boarded');
-        else { setStatus('playlist looks empty — trying direct load'); ytLoadList(id); }
-      }).catch(function(){ setStatus('API fetch failed — trying direct load'); ytLoadList(id); });
-    } else ytLoadList(id);
+
+function startEngine(){
+  if (SRC.list && CONFIG.GOOGLE_API_KEY){
+    prefetchViaAPI(SRC.list).then(function(items){
+      if (!items.length) throw 'empty';
+      if (now.playing){ apiQueueReady=true; return; } // already rolling via embed — don't interrupt
+      ytMode='queue'; queue=items; qi=0; apiQueueReady=true;
+      ytTitlesFromQueue(); paintNow();
+      if (window.YT && YT.Player) buildYT(queue[0].id); // rebuild cued on the real first song
+    }).catch(function(){
+      ytMode='list';
+      if (window.YT && YT.Player) buildYTList(SRC.list);
+    });
+    // while fetching, cue the videoseries embed so something exists
+    buildYTList(SRC.list);
   }
-  else if (mVid){ ytStartQueue([{id:mVid[1], ta:'', en:'your pick', sub:'YouTube'}]); }
-  else setStatus('could not read that link');
-});
+  else if (SRC.list){ buildYTList(SRC.list); }
+  else { buildYT(queue[0].id); }
+  if (SRC.bad) setStatus(SRC.bad + ' — playing the Tamil mix');
+}
+window.onYouTubeIframeAPIReady=function(){ startEngine(); };
 
-/* Google sign-in → your playlists */
-var gToken=null;
-var gs=document.createElement('script'); gs.src='https://accounts.google.com/gsi/client'; gs.async=true; document.head.appendChild(gs);
-$('gBtn').addEventListener('click', function(){
-  if (!CONFIG.GOOGLE_CLIENT_ID){ $('gNote').innerHTML='Add your <code>GOOGLE_CLIENT_ID</code> at the top of this file to enable sign-in (steps in the file). Pasting a playlist link above works without it.'; return; }
-  if (!(window.google&&google.accounts&&google.accounts.oauth2)){ $('gNote').textContent='Google sign-in script not loaded (blocked here?) — try the deployed page.'; return; }
-  var tc=google.accounts.oauth2.initTokenClient({
-    client_id:CONFIG.GOOGLE_CLIENT_ID,
-    scope:'https://www.googleapis.com/auth/youtube.readonly',
-    callback:function(r){ if(r&&r.access_token){ gToken=r.access_token; gPlaylists(); } }
-  });
-  tc.requestAccessToken();
-});
-function gPlaylists(){
-  fetch('https://www.googleapis.com/youtube/v3/playlists?part=snippet&mine=true&maxResults=50',
-    {headers:{Authorization:'Bearer '+gToken}})
-  .then(function(r){return r.json();})
-  .then(function(j){
-    var sel=$('gSel'); sel.innerHTML='<option value="">my playlists…</option>';
-    (j.items||[]).forEach(function(p){
-      var o=document.createElement('option'); o.value=p.id; o.textContent=p.snippet.title; sel.appendChild(o);
-    });
-    sel.style.display=''; $('gNote').textContent=(j.items&&j.items.length)?'':'No playlists found on this account.';
-  }).catch(function(){ $('gNote').textContent='Could not load playlists (is YouTube Data API enabled?).'; });
-}
-$('gSel').addEventListener('change', function(){
-  var id=this.value; if(!id) return;
-  useYT();
-  fetch('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId='+id,
-    {headers:{Authorization:'Bearer '+gToken}})
-  .then(function(r){return r.json();})
-  .then(function(j){
-    var items=(j.items||[]).filter(function(it){return it.snippet&&it.snippet.resourceId&&it.snippet.resourceId.videoId;});
-    if(!items.length){ setStatus('that playlist looks empty'); return; }
-    ytMode='queue';
-    queue=items.map(function(it){ return {id:it.snippet.resourceId.videoId, ta:'', en:it.snippet.title, sub:'your playlist'}; });
-    ytLoad(0); if(ytReady) ytP.playVideo();
-    setStatus(queue.length+' songs boarded from your YouTube');
-  }).catch(function(){ setStatus('could not load that playlist'); });
-});
-
-/* ================= SPOTIFY ================= */
-var spTok=LS.getItem('sp_at')||null, spRef=LS.getItem('sp_rt')||null, spExp=+(LS.getItem('sp_exp')||0);
-var sdkPlayer=null, sdkOk=false, spDeviceId=null, spUsingApiFallback=false, spPollTick=0;
-var REDIRECT = location.origin + location.pathname;
-
-function b64url(buf){
-  var s=btoa(String.fromCharCode.apply(null,new Uint8Array(buf)));
-  return s.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function rndStr(n){
-  var a=new Uint8Array(n); crypto.getRandomValues(a);
-  return Array.prototype.map.call(a,function(b){return ('0'+(b&63).toString(16)).slice(-2);}).join('').slice(0,n);
-}
-function spLogin(){
-  if (!CONFIG.SPOTIFY_CLIENT_ID){ $('spNote').innerHTML='Add your <code>SPOTIFY_CLIENT_ID</code> at the top of this file (2-min setup, steps in the file), then this button logs you straight in.'; return; }
-  var ver=rndStr(64); SS.setItem('sp_ver',ver);
-  crypto.subtle.digest('SHA-256', new TextEncoder().encode(ver)).then(function(h){
-    var q=new URLSearchParams({
-      client_id:CONFIG.SPOTIFY_CLIENT_ID, response_type:'code', redirect_uri:REDIRECT,
-      code_challenge_method:'S256', code_challenge:b64url(h),
-      scope:'streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative'
-    });
-    location.href='https://accounts.spotify.com/authorize?'+q.toString();
-  });
-}
-function spSaveTok(j){
-  spTok=j.access_token; if(j.refresh_token) spRef=j.refresh_token;
-  spExp=Date.now()+ (j.expires_in||3600)*1000;
-  LS.setItem('sp_at',spTok); if(spRef) LS.setItem('sp_rt',spRef); LS.setItem('sp_exp',String(spExp));
-}
-function spToken(){
-  if (spTok && Date.now() < spExp-60000) return Promise.resolve(spTok);
-  if (!spRef) return Promise.reject('no token');
-  return fetch('https://accounts.spotify.com/api/token',{method:'POST',
-    headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:new URLSearchParams({grant_type:'refresh_token', refresh_token:spRef, client_id:CONFIG.SPOTIFY_CLIENT_ID})
-  }).then(function(r){return r.json();}).then(function(j){ if(j.access_token){spSaveTok(j); return spTok;} throw 'refresh failed'; });
-}
-function spFetch(path, opts){
-  opts=opts||{};
-  return spToken().then(function(tk){
-    opts.headers=Object.assign({Authorization:'Bearer '+tk}, opts.headers||{});
-    return fetch('https://api.spotify.com/v1'+path, opts);
-  });
-}
-/* handle the redirect back with ?code= */
-(function(){
-  var p=new URLSearchParams(location.search);
-  if (p.get('code') && SS.getItem('sp_ver') && CONFIG.SPOTIFY_CLIENT_ID){
-    fetch('https://accounts.spotify.com/api/token',{method:'POST',
-      headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:new URLSearchParams({client_id:CONFIG.SPOTIFY_CLIENT_ID, grant_type:'authorization_code',
-        code:p.get('code'), redirect_uri:REDIRECT, code_verifier:SS.getItem('sp_ver')})
-    }).then(function(r){return r.json();}).then(function(j){
-      if (j.access_token){ spSaveTok(j); history.replaceState({},'',REDIRECT); spAfterLogin(); }
-      else $('spNote').textContent='Spotify login failed — check the redirect URI in your Spotify app settings matches this page exactly.';
-    });
-  } else if (spTok||spRef){ spAfterLogin(); }
-})();
-$('spBtn').addEventListener('click', spLogin);
-
-function spAfterLogin(){
-  $('spBtn').textContent='Spotify: logged in';
-  $('spNote').textContent='';
-  spPlaylists();
-  /* try the in-browser player first */
-  var s=document.createElement('script'); s.src='https://sdk.scdn.co/spotify-player.js'; document.head.appendChild(s);
-  window.onSpotifyWebPlaybackSDKReady=function(){
-    sdkPlayer=new Spotify.Player({name:'Model 3 Hits', volume:0.9,
-      getOAuthToken:function(cb){ spToken().then(cb).catch(function(){}); }});
-    sdkPlayer.addListener('ready',function(e){ sdkOk=true; spDeviceId=e.device_id; setStatus('Spotify ready — this browser is the speaker'); });
-    sdkPlayer.addListener('player_state_changed',function(st){
-      if (!st || src!=='sp') return;
-      var tr=st.track_window&&st.track_window.current_track;
-      if (tr){ now.title=tr.name; now.sub=(tr.artists||[]).map(function(a){return a.name;}).join(', '); }
-      now.dur=(st.duration||0)/1000; now.ct=(st.position||0)/1000; now.playing=!st.paused;
-      paintNow(); paintTime();
-    });
-    sdkPlayer.addListener('account_error',function(){ $('spNote').textContent='Playback needs Spotify Premium. You can still browse playlists, and control the Spotify app on another device below.'; spDevicesFallback(); });
-    sdkPlayer.addListener('initialization_error',function(){ spDevicesFallback(); });
-    sdkPlayer.addListener('authentication_error',function(){ $('spNote').textContent='Spotify session expired — log in again.'; });
-    sdkPlayer.connect();
-  };
-  setTimeout(function(){ if(!sdkOk) spDevicesFallback(); }, 5000);
-}
-function spDevicesFallback(){
-  if (sdkOk) return;
-  spUsingApiFallback=true;
-  spFetch('/me/player/devices').then(function(r){return r.json();}).then(function(j){
-    var sel=$('spDev'); sel.innerHTML='<option value="">play on…</option>';
-    (j.devices||[]).forEach(function(d){
-      var o=document.createElement('option'); o.value=d.id; o.textContent=d.name+(d.is_active?' · active':''); sel.appendChild(o);
-    });
-    sel.style.display='';
-    if (!(j.devices||[]).length) $('spNote').textContent='This browser can\'t be the speaker here (e.g. iPhone Safari). Open the Spotify app on any device, then reopen this menu and pick it.';
-    else $('spNote').textContent='Pick a device — this page becomes the remote.';
-  }).catch(function(){ $('spNote').textContent='Could not reach Spotify — log in again.'; });
-}
-$('spDev').addEventListener('change', function(){ spDeviceId=this.value||null; });
-function spPlaylists(){
-  spFetch('/me/playlists?limit=50').then(function(r){return r.json();}).then(function(j){
-    var sel=$('spSel'); sel.innerHTML='<option value="">my playlists…</option>';
-    (j.items||[]).forEach(function(p){
-      var o=document.createElement('option'); o.value=p.uri; o.textContent=p.name; sel.appendChild(o);
-    });
-    sel.style.display='';
-  }).catch(function(){ $('spNote').textContent='Could not load playlists — log in again.'; });
-}
-$('spSel').addEventListener('change', function(){
-  var uri=this.value; if(!uri) return;
-  useSP();
-  var q = spDeviceId ? ('?device_id='+encodeURIComponent(spDeviceId)) : '';
-  spFetch('/me/player/play'+q,{method:'PUT', body:JSON.stringify({context_uri:uri})})
-  .then(function(r){
-    if (r.status===404 && !sdkOk){ $('spNote').textContent='No active Spotify device — open the Spotify app somewhere, pick it under "play on…", and try again.'; }
-    else if (r.status===403){ $('spNote').textContent='Playback needs Spotify Premium.'; }
-    else setStatus('Spotify boarding…');
-  }).catch(function(){});
-});
-function useSP(){
-  if (src==='yt' && ytReady){ try{ ytP.pauseVideo(); }catch(e){} }
-  src='sp'; paintNow();
-}
-function spPause(){
-  if (sdkOk && sdkPlayer) sdkPlayer.pause();
-  else if (spTok) spFetch('/me/player/pause',{method:'PUT'}).catch(function(){});
-}
-function spTogglePlay(){
-  if (sdkOk && sdkPlayer){ sdkPlayer.togglePlay(); return; }
-  if (now.playing) spFetch('/me/player/pause',{method:'PUT'}).catch(function(){});
-  else spFetch('/me/player/play'+(spDeviceId?'?device_id='+encodeURIComponent(spDeviceId):''),{method:'PUT'}).catch(function(){});
-}
-function spNext(){
-  if (sdkOk && sdkPlayer){ sdkPlayer.nextTrack(); return; }
-  spFetch('/me/player/next',{method:'POST'}).catch(function(){});
-}
-function spSeek(sec){
-  if (sdkOk && sdkPlayer){ sdkPlayer.seek(Math.round(sec*1000)); return; }
-  spFetch('/me/player/seek?position_ms='+Math.round(sec*1000)+(spDeviceId?'&device_id='+encodeURIComponent(spDeviceId):''),{method:'PUT'}).catch(function(){});
-}
-function spPollState(){
-  spFetch('/me/player').then(function(r){ return r.status===204?null:r.json(); }).then(function(j){
-    if (!j || src!=='sp') return;
-    if (j.item){ now.title=j.item.name; now.sub=(j.item.artists||[]).map(function(a){return a.name;}).join(', '); now.dur=(j.item.duration_ms||0)/1000; }
-    now.ct=(j.progress_ms||0)/1000; now.playing=!!j.is_playing;
-    paintNow(); paintTime();
-  }).catch(function(){});
-}
-
-/* ================= SHARED CONTROLS ================= */
+/* ================= CONTROLS ================= */
 $('playBtn').addEventListener('click', function(){
-  if (src==='yt'){
-    if (!ytReady){ setStatus('still boarding…'); return; }
-    if (now.playing) ytP.pauseVideo(); else ytP.playVideo();
-  } else spTogglePlay();
+  if (!ytReady){ setStatus('still boarding…'); return; }
+  if (now.playing) ytP.pauseVideo(); else ytP.playVideo();
 });
-$('nextBtn').addEventListener('click', function(){
-  if (src==='yt'){ if(ytReady) ytNext(); } else spNext();
-});
+$('nextBtn').addEventListener('click', function(){ if(ytReady) ytNext(); });
 seek.addEventListener('input', function(){ seeking=true; });
 seek.addEventListener('change', function(){
-  var p=+seek.value/1000, target=now.dur*p;
-  if (src==='yt'){ if(ytReady && now.dur>0) ytP.seekTo(target,true); }
-  else spSeek(target);
+  var p=+seek.value/1000;
+  if (ytReady && now.dur>0) ytP.seekTo(now.dur*p, true);
   seeking=false;
 });
-$('mixBtn').addEventListener('click', function(){
-  useYT(); ytMode='queue'; queue=MIX.slice(); errStreak=0; ytLoad(0);
-  if (ytReady) ytP.playVideo();
-});
-var panel=$('panel');
-$('srcBtn').addEventListener('click', function(){ panel.classList.toggle('open'); });
 
 setInterval(function(){
-  if (src==='yt'){
-    if (ytReady && ytP && ytP.getCurrentTime){
-      now.ct=ytP.getCurrentTime()||0;
-      if (!now.dur) now.dur=ytP.getDuration()||0;
-      paintTime();
-    }
-  } else {
-    if (sdkOk && sdkPlayer){
-      sdkPlayer.getCurrentState().then(function(st){
-        if (!st) return;
-        now.ct=(st.position||0)/1000; now.dur=(st.duration||0)/1000; now.playing=!st.paused;
-        paintTime(); paintNow();
-      });
-    } else if (spUsingApiFallback && spTok){
-      spPollTick++;
-      if (spPollTick%6===0) spPollState();
-      else if (now.playing){ now.ct=Math.min(now.dur, now.ct+0.5); paintTime(); }
-    }
+  if (ytReady && ytP && ytP.getCurrentTime){
+    now.ct=ytP.getCurrentTime()||0;
+    if (!now.dur) now.dur=ytP.getDuration()||0;
+    paintTime();
   }
 }, 500);
 
 /* ================= BOARDING ================= */
-var boarded=false, board=$('board');
+var board=$('board');
 board.addEventListener('click', function(){
   if (boarded) return; boarded=true;
   board.style.transition='opacity .7s'; board.style.opacity=0;
   setTimeout(function(){ board.style.display='none'; },750);
-  ytTitlesFromQueue(); paintNow();
-  if (ytReady) ytP.playVideo(); else { pendingPlay=true; setStatus('பாட்டு ஏறுது…'); }
-  setTimeout(function(){ if(!ytReady) setStatus('YouTube blocked here — open the deployed page for music'); },6000);
+  if (ytMode==='queue') { ytTitlesFromQueue(); }
+  else { now.title='உங்க playlist'; now.sub='Model 3 Hits'; }
+  paintNow();
+  if (ytReady){ try{ ytP.playVideo(); }catch(e){} }
+  else { pendingPlay=true; setStatus('பாட்டு ஏறுது…'); }
+  clearTimeout(listWatchdog);
+  listWatchdog=setTimeout(function(){
+    if (!now.playing && errStreak===0) setStatus("didn't start? tap ▶ — or owner: check the playlist is Public");
+  }, 6000);
+  setTimeout(function(){ if(!window.YT) setStatus('YouTube blocked here — open the deployed page for music'); },6000);
 });
 
 paintNow(); paintTime();
