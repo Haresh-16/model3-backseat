@@ -91,6 +91,7 @@
   .pill{background:transparent;border:1px solid rgba(255,255,255,.16);color:var(--ink);
     font-size:9px;letter-spacing:.16em;text-transform:uppercase;padding:6px 10px;border-radius:8px;cursor:pointer;flex:none}
   .pill:active{background:rgba(255,255,255,.1)}
+  a.pill{text-decoration:none;display:inline-flex;align-items:center;line-height:1.2}
 
   /* boarding */
   #board{position:fixed;inset:0;background:radial-gradient(120% 90% at 50% 30%, rgba(13,20,28,.55) 0%, rgba(5,8,12,.88) 75%);
@@ -153,6 +154,7 @@
     </div>
     <div id="miscRow">
       <span id="status">songs play via YouTube</span>
+      <a id="plLink" class="pill" href="#" target="_blank" rel="noopener" style="display:none">Playlist ↗</a>
       <button class="pill" id="nightBtn">Night</button>
     </div>
   </div>
@@ -308,6 +310,15 @@ function paintTime(){
   stripBar.style.width = (p*100)+'%';
 }
 function setStatus(t){ statusEl.textContent=t; }
+var plLink=$('plLink');
+function updatePlLink(){
+  var href='', label='';
+  if (SRC.list){ href='https://www.youtube.com/playlist?list='+encodeURIComponent(SRC.list); label='Playlist ↗'; }
+  else if (SRC.video){ href='https://www.youtube.com/watch?v='+SRC.video; label='Song ↗'; }
+  else if (queue[qi]){ href='https://www.youtube.com/watch?v='+queue[qi].id; label='Song ↗'; }
+  if (href){ plLink.href=href; plLink.textContent=label; plLink.style.display=''; }
+  else plLink.style.display='none';
+}
 
 /* ================= THE PLAYLIST (owner-configured) ================= */
 function parseSource(v){
@@ -389,7 +400,7 @@ function ytTitlesFromQueue(){
 }
 function ytLoad(i){
   qi=(i+queue.length)%queue.length;
-  ytTitlesFromQueue(); now.ct=0; now.dur=0; paintNow(); paintTime();
+  ytTitlesFromQueue(); now.ct=0; now.dur=0; paintNow(); paintTime(); updatePlLink();
   if (ytReady) ytP.loadVideoById(queue[qi].id);
 }
 function ytNext(){
@@ -480,7 +491,7 @@ board.addEventListener('click', function(){
   setTimeout(function(){ if(!window.YT) setStatus('YouTube blocked here — open the deployed page for music'); },6000);
 });
 
-paintNow(); paintTime();
+paintNow(); paintTime(); updatePlLink();
 })();
 </script>
 </body>
