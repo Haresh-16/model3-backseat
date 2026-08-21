@@ -131,7 +131,7 @@
   #board .foot a{color:#e2e8ee}
   @keyframes pulse{0%,100%{opacity:.65}50%{opacity:1}}
   @media (max-width:430px){ #board h1{font-size:24px} }
-  #yt{position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:.01;pointer-events:none}
+  #ytWrap{position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:.01;pointer-events:none}
 </style>
 </head>
 <body>
@@ -155,7 +155,7 @@
   </div>
 </div>
 <div id="vig"></div>
-<div id="yt"></div>
+<div id="ytWrap"><div id="yt"></div></div>
 
 <div id="hud">
   <div id="title"><b>Model 3 Hits</b><span>rear seat · a ride down memory lane</span></div>
@@ -253,7 +253,7 @@
 var CONFIG = {
   SPOTIFY_CLIENT_ID: 'ac8dd9f80c1940bb9e95008c94a9199e',
   GOOGLE_CLIENT_ID: '758942052878-uvtv3d9jqpppfk4rhlmumfsf7t2pr3ed.apps.googleusercontent.com',
-  GOOGLE_API_KEY: 'AIzaSyB1GG0jdMA2EX1ZAMoAAksMoktb_6TGFao'
+  GOOGLE_API_KEY: ''
 };
 
 var MIX = [
@@ -398,36 +398,56 @@ var tag=document.createElement('script');
 tag.src='https://www.youtube.com/iframe_api';
 tag.onerror=function(){ setStatus('YouTube blocked here — open the deployed page for music'); };
 document.head.appendChild(tag);
+
+function onYTReady(){
+  ytReady=true;
+  if (ytMode==='list'){
+    setStatus('playlist boarding…');
+    try{ ytP.playVideo(); }catch(e){}
+    setTimeout(function(){
+      if (src==='yt' && ytMode==='list' && !now.playing) setStatus('tap ▶ to start your playlist');
+    }, 3000);
+  } else {
+    setStatus('ready · '+queue.length+' songs on board');
+    if (pendingPlay){ pendingPlay=false; try{ ytP.playVideo(); }catch(e){} }
+  }
+}
+function onYTState(e){
+  if (src!=='yt') return;
+  if (e.data===YT.PlayerState.PLAYING){
+    errStreak=0; now.playing=true; now.dur=ytP.getDuration()||0;
+    if (ytMode==='list'){ try{ ytP.setLoop(true); var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='your playlist'; }catch(x){} }
+    setStatus('now playing'); paintNow();
+  } else if (e.data===YT.PlayerState.CUED){ if (ytMode==='list') try{ ytP.playVideo(); }catch(x){} }
+  else if (e.data===YT.PlayerState.PAUSED){ now.playing=false; setStatus('paused'); paintNow(); }
+  else if (e.data===YT.PlayerState.BUFFERING){ setStatus('பாட்டு ஏறுது…'); }
+  else if (e.data===YT.PlayerState.ENDED){ ytNext(); }
+}
+function onYTError(){
+  errStreak++;
+  if (ytMode==='list'){
+    if (errStreak>=3){ setStatus("that playlist won't embed — make sure it's public or unlisted"); now.playing=false; paintNow(); return; }
+    setStatus('song skipped…'); try{ ytP.nextVideo(); }catch(x){} return;
+  }
+  if (errStreak>=Math.max(queue.length,3)){ setStatus('these songs are unavailable right now'); now.playing=false; paintNow(); return; }
+  setStatus('song skipped…'); ytNext();
+}
+/* (re)build the hidden player; passing list vars here is the reliable
+   way to load a playlist — the loadPlaylist/cuePlaylist JS calls are
+   flaky, so for pasted playlists we rebuild with the list baked in */
+function buildYT(videoId, extraVars){
+  ytReady=false;
+  var w=document.getElementById('ytWrap');
+  w.innerHTML='<div id="yt"></div>';
+  var cfg={ height:'2', width:'2',
+    playerVars:Object.assign({playsinline:1,controls:0,disablekb:1,rel:0}, extraVars||{}),
+    events:{onReady:onYTReady, onStateChange:onYTState, onError:onYTError} };
+  if (videoId) cfg.videoId=videoId;
+  ytP=new YT.Player('yt', cfg);
+}
 window.onYouTubeIframeAPIReady=function(){
-  ytP=new YT.Player('yt',{
-    height:'2',width:'2',videoId:queue[0].id,
-    playerVars:{playsinline:1,controls:0,disablekb:1,rel:0},
-    events:{
-      onReady:function(){ ytReady=true; setStatus('ready · '+queue.length+' songs on board');
-        if (pendingList){ var L=pendingList; pendingList=null; ytLoadList(L); }
-        else if (pendingPlay) ytP.playVideo(); },
-      onStateChange:function(e){
-        if (src!=='yt') return;
-        if (e.data===YT.PlayerState.PLAYING){
-          errStreak=0; now.playing=true; now.dur=ytP.getDuration()||0;
-          if (ytMode==='list'){ try{ ytP.setLoop(true); var d=ytP.getVideoData(); now.title=d&&d.title?d.title:'YouTube'; now.sub='your playlist'; }catch(x){} }
-          setStatus('now playing'); paintNow();
-        } else if (e.data===YT.PlayerState.CUED){ if (ytMode==='list') ytP.playVideo(); }
-        else if (e.data===YT.PlayerState.PAUSED){ now.playing=false; setStatus('paused'); paintNow(); }
-        else if (e.data===YT.PlayerState.BUFFERING){ setStatus('பாட்டு ஏறுது…'); }
-        else if (e.data===YT.PlayerState.ENDED){ ytNext(); }
-      },
-      onError:function(){
-        errStreak++;
-        if (ytMode==='list'){
-          if (errStreak>=3){ setStatus("that playlist won't embed — make sure it's public or unlisted"); now.playing=false; paintNow(); return; }
-          setStatus('song skipped…'); try{ ytP.nextVideo(); }catch(x){} return;
-        }
-        if (errStreak>=Math.max(queue.length,3)){ setStatus('these songs are unavailable right now'); now.playing=false; paintNow(); return; }
-        setStatus('song skipped…'); ytNext();
-      }
-    }
-  });
+  if (pendingList){ var L=pendingList; pendingList=null; ytLoadList(L); }
+  else buildYT(queue[0].id, null);
 };
 function ytTitlesFromQueue(){
   var s=queue[qi]||{};
@@ -445,8 +465,10 @@ function ytNext(){
 }
 var pendingList=null;
 function ytLoadList(listId){
-  ytMode='list'; now.title='உங்க playlist'; now.sub='loading…'; now.ct=0; now.dur=0; paintNow(); paintTime();
-  if (ytReady){ ytP.cuePlaylist({listType:'playlist', list:listId}); ytP.playVideo(); }
+  ytMode='list'; errStreak=0;
+  now.title='உங்க playlist'; now.sub='loading…'; now.ct=0; now.dur=0; now.playing=false;
+  paintNow(); paintTime();
+  if (window.YT && YT.Player) buildYT(null, {listType:'playlist', list:listId, autoplay:1});
   else pendingList=listId;
 }
 function useYT(){ if (src==='sp') spPause(); src='yt'; paintNow(); }
@@ -476,6 +498,7 @@ function fetchPublicList(id){
   }
   return page('').then(function(){ return items; });
 }
+$('ytUrl').addEventListener('keydown', function(e){ if (e.key==='Enter'){ e.preventDefault(); $('ytGo').click(); } });
 $('ytGo').addEventListener('click', function(){
   var v=$('ytUrl').value.trim(); if(!v) return;
   $('ytUrl').value='';
